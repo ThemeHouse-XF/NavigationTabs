@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="ThemeHouse_NavigationTabs" title="[⌂] Navigation Tabs" version_string="1.0.0" version_id="1447094555" url="http://xf.themehouse.io/" install_callback_class="ThemeHouse_Install" install_callback_method="install" uninstall_callback_class="ThemeHouse_Install" uninstall_callback_method="uninstall">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="th_option_list_priorities_navigationtabs"><![CDATA[<xen:foreach loop="$formatParams.addOns" value="$addOn" i="$i">
+	<xen:if is="{$addOn.callbacks}">
+		<xen:foreach loop="$addOn.callbacks" value="$callback" j="$j">
+			<xen:spinboxunit label="{xen:if '{$j} == 0', {xen:phrase th_addon_x_display_order_navigationtabs, 'title={$addOn.title}'}}" name="{$fieldPrefix}[{$preparedOption.option_id}][{$callback}]" value="{$preparedOption.option_value.{$callback}}"
+			hint="{$preparedOption.hint}" size="{$formatParams.size}" min="{$formatParams.min}" max="{$formatParams.max}" step="{$formatParams.step}">
+				<xen:explain>{xen:raw $callback}</xen:explain>
+				<xen:html>
+					<xen:if is="{$i} == 1">
+						<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+						{xen:raw $editLink}
+					</xen:if>
+				</xen:html>
+			</xen:spinboxunit>
+		</xen:foreach>
+	</xen:if>
+</xen:foreach>]]></template>
+  </admin_templates>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="controller_pre_dispatch" execute_order="10" callback_class="ThemeHouse_Listener_ControllerPreDispatch" callback_method="controllerPreDispatch" active="1" hint="" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="ThemeHouse_NavigationTabs_Listener_FileHealthCheck" callback_method="fileHealthCheck" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="ThemeHouse_Listener_InitDependencies" callback_method="initDependencies" active="1" hint="" description=""/>
+    <listener event_id="navigation_tabs" execute_order="0" callback_class="ThemeHouse_NavigationTabs_Listener_NavigationTabs" callback_method="navigationTabs" active="1" hint="" description=""/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <group group_id="th_navigationTabs" display_order="1000" debug_only="0"/>
+    <option option_id="th_navigationTabs_forumTabPriority" edit_format="spinbox" data_type="unsigned_integer" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params/>
+      <sub_options/>
+      <relation group_id="th_navigationTabs" display_order="1"/>
+    </option>
+    <option option_id="th_navigationTabs_priority" edit_format="callback" data_type="array" can_backup="1">
+      <default_value/>
+      <edit_format_params>ThemeHouse_NavigationTabs_Option_Priority::renderSpinBoxes</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="th_navigationTabs" display_order="100"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="option_group_th_navigationTabs" version_id="1412154972" version_string="1.0.0"><![CDATA[Navigation Tabs by ThemeHouse]]></phrase>
+    <phrase title="option_group_th_navigationTabs_description" version_id="1412154972" version_string="1.0.0"><![CDATA[Options for the Navigation Tabs by ThemeHouse add-on.]]></phrase>
+    <phrase title="option_th_navigationTabs_forumTabPriority" version_id="1412154972" version_string="1.0.0"><![CDATA[Forum Tab Display Order]]></phrase>
+    <phrase title="option_th_navigationTabs_forumTabPriority_explain" version_id="1412154972" version_string="1.0.0"><![CDATA[]]></phrase>
+    <phrase title="option_th_navigationTabs_priority" version_id="1412154972" version_string="1.0.0"><![CDATA[Priorities]]></phrase>
+    <phrase title="option_th_navigationTabs_priority_explain" version_id="1412154972" version_string="1.0.0"><![CDATA[]]></phrase>
+    <phrase title="th_addon_x_display_order_navigationtabs" version_id="1412154972" version_string="1.0.0"><![CDATA[{title} Display Order]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications>
+    <modification template="footer" modification_key="th_copyrightNotice_navigationTabs" description="Copyright notice for [⌂] Navigation Tabs" execution_order="1" enabled="1" action="callback">
+      <find><![CDATA[/{xen:phrase (?:xenforo|extra)_copyright}/]]></find>
+      <replace><![CDATA[ThemeHouse_Listener_InitDependencies::copyrightNotice]]></replace>
+    </modification>
+    <modification template="navigation" modification_key="th_navigation_navigationTabs" description="Re-orders tabs in navigation." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#(<!-- forums -->.*<!-- extra tabs: middle -->)(\s*<xen:if is="{\$extraTabs\.middle}">\s*<xen:foreach loop="\$extraTabs\.middle" key="\$extraTabId" value="\$extraTab">)(.*)(</xen:foreach>\s*</xen:if>)#Us]]></find>
+      <replace><![CDATA[<!-- extra tabs: left -->
+${2}
+<xen:if is="{$extraTab.priority} < {$xenOptions.th_navigationTabs_forumTabPriority}">
+${3}
+</xen:if>
+${4}
+${1}
+${2}
+<xen:if is="{$extraTab.priority} >= {$xenOptions.th_navigationTabs_forumTabPriority}">
+${3}
+</xen:if>
+${4}]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
